@@ -51,3 +51,8 @@ if __name__ == "__main__":
     for c in active_conns:
         status, hostname = triage_connection(c['remote_ip'])
         print(f"{c['process_name']:<20} | {c['remote_ip']:<15} | {hostname[:25]:<25} | {status}")
+        
+        # New Integration Logic
+        if status == "Unknown" or status == "Blacklisted":
+            log_msg = f"ALERT: {c['process_name']} ({c['pid']}) connected to {c['remote_ip']} ({hostname})"
+            log_event_encrypted(log_msg)
