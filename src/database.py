@@ -29,6 +29,21 @@ def init_db():
         ''')
         conn.commit()
 
+def update_reputation(ip, status, description="Manual Entry"):
+    """Adds or updates an IP's status (0 for Whitelist, 1 for Blacklist)."""
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO reputation (ip_address, status, description)
+            VALUES (?, ?, ?)
+            ON CONFLICT(ip_address) DO UPDATE SET
+                status=excluded.status,
+                description=excluded.description
+        ''', (ip, status, description))
+        conn.commit()
+
+        
+
 if __name__ == "__main__":
     # Test initialization
     init_db()

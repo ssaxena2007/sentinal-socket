@@ -34,6 +34,11 @@ def main():
     # Command: init
     subparsers.add_parser("init", help="Initialize the database and directories")
 
+    # Command: allow (Whitelist an IP)
+    allow_parser = subparsers.add_parser("allow", help="Whitelist an IP address")
+    allow_parser.add_argument("ip", help="The IP address to whitelist")
+    allow_parser.add_argument("--desc", default="Manual Whitelist", help="Description for the entry")
+
     args = parser.parse_args()
 
     if args.command == "init":
@@ -42,9 +47,14 @@ def main():
     elif args.command == "start":
         run_monitor()
     elif args.command == "logs":
-        read_encrypted_logs()
+        read_encrypted_logs()    
+    elif args.command == "allow":
+        from src.database import update_reputation
+        update_reputation(args.ip, 0, args.desc)
+        print(f"IP {args.ip} has been whitelisted.")
     else:
         parser.print_help()
+    
 
 if __name__ == "__main__":
     main()
