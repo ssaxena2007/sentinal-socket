@@ -7,4 +7,5 @@ venv/
 # App Specific
 data/sentinel.db
 logs/*.log
+logs/*.key
 .env
