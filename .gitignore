@@ -1,0 +1,10 @@
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+
+# App Specific
+data/sentinel.db
+logs/*.log
+.env
