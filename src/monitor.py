@@ -2,6 +2,8 @@ import psutil
 import socket
 import sqlite3 # Critical Fix: Standard library import
 from src.config import POLLING_INTERVAL, DB_PATH # Critical Fix: Need DB_PATH for triage
+from src.logger import log_event_encrypted
+
 
 def get_active_connections():
     """Fetches currently established TCP/UDP connections."""
