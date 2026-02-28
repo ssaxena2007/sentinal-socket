@@ -3,6 +3,9 @@ import socket
 import sqlite3 # Critical Fix: Standard library import
 from src.config import POLLING_INTERVAL, DB_PATH # Critical Fix: Need DB_PATH for triage
 from src.logger import log_event_encrypted
+from src.intelligence import check_ip_reputation
+from src.alerts import send_threat_alert
+
 
 
 def get_active_connections():
@@ -58,3 +61,15 @@ if __name__ == "__main__":
         if status == "Unknown" or status == "Blacklisted":
             log_msg = f"ALERT: {c['process_name']} ({c['pid']}) connected to {c['remote_ip']} ({hostname})"
             log_event_encrypted(log_msg)
+        
+
+        status, hostname = triage_connection(c['remote_ip'])
+
+        if status == "Unknown":
+            score = check_ip_reputation(c['remote_ip'])
+
+
+            if score and score > 50:
+                send_threat_alert(c['process_name'], c['remote_ip'], score)
+                log_msg = f"CRITICAL: High-risk connection ({score}%) from {c['process_name']}"
+                log_event_encrypted(log_msg)
