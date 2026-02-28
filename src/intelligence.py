@@ -1,13 +1,11 @@
 import sqlite3
-from datetime import datetime, timedelta
-from src.config import DB_PATH, API_KEY
 import requests
+from datetime import datetime
+from src.config import DB_PATH, API_KEY
 
 def get_cached_score(ip):
-    """Retrieves score from DB if it's less than 7 days old."""
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
-        # Only select if updated in the last 7 days
         cursor.execute("""
             SELECT score FROM ip_cache 
             WHERE ip_address = ? 
@@ -17,7 +15,6 @@ def get_cached_score(ip):
         return result[0] if result else None
 
 def save_to_cache(ip, score):
-    """Saves or updates the IP score in the local cache."""
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         cursor.execute("""
@@ -30,19 +27,27 @@ def save_to_cache(ip, score):
         conn.commit()
 
 def check_ip_reputation(ip):
-    # 1. Check Cache First
+    # 1. Check Cache
     cached = get_cached_score(ip)
     if cached is not None:
         return cached
 
-    # 2. If not in cache, call API
-    if not API_KEY: return None
+    # 2. API Call (Only if not in cache)
+    if not API_KEY:
+        return None
+
+    url = 'https://api.abuseipdb.com/api/v2/check'
+    headers = {'Accept': 'application/json', 'Key': API_KEY}
+    params = {'ipAddress': ip, 'maxAgeInDays': '90'}
+
+    try:
+        # We assign the result of the request to 'response' here
+        response = requests.get(url, headers=headers, params=params, timeout=5)
+        if response.status_code == 200:
+            score = response.json()['data']['abuseConfidenceScore']
+            save_to_cache(ip, score)
+            return score
+    except Exception as e:
+        print(f"API Error: {e}")
     
-    # ... (Your existing requests.get code here) ...
-    
-    if response.status_code == 200:
-        score = response.json()['data']['abuseConfidenceScore']
-        # 3. Save to Cache for next time
-        save_to_cache(ip, score)
-        return score
     return None
