@@ -35,7 +35,22 @@ Sentinel-Socket is a professional-grade security utility designed to monitor act
     python main.py init
     ```
 
+## Usage
+- **Start Monitoring**: 
+    ```bash 
+    python main.py start
+    ```
 
+- **View Decrypted Logs**: 
+    ```bash
+    python main.py logs
+    ```
+
+- **Whitelist an IP**: 
+    ```bash
+    python main.py allow <IP_ADDRESS> --desc "Work Server"
+    ```
+    
 
 
 # OLD system
