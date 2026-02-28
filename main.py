@@ -4,23 +4,40 @@ from src.monitor import get_active_connections, triage_connection
 from src.logger import read_encrypted_logs, log_event_encrypted
 from src.database import init_db
 
+from src.intelligence import check_ip_reputation
+from src.alerts import send_threat_alert
+
 def run_monitor():
-    """Starts the heartbeat monitor."""
-    print(f"{'PROCESS':<20} | {'REMOTE IP':<15} | {'HOSTNAME':<25} | {'STATUS'}")
-    print("-" * 75)
+    """Starts the heartbeat monitor with Intelligence Enrichment."""
+    # Added a 'SCORE' column to the header
+    print(f"{'PROCESS':<20} | {'REMOTE IP':<15} | {'STATUS':<12} | {'SCORE'}")
+    print("-" * 65)
     
     try:
         active_conns = get_active_connections()
         for c in active_conns:
             status, hostname = triage_connection(c['remote_ip'])
-            print(f"{c['process_name']:<20} | {c['remote_ip']:<15} | {hostname[:25]:<25} | {status}")
             
-            if status == "Unknown" or status == "Blacklisted":
-                log_msg = f"ALERT: {c['process_name']} ({c['pid']}) -> {c['remote_ip']} ({hostname})"
-                log_event_encrypted(log_msg)
+            # Fetch Intelligence if the IP is Unknown
+            score_display = "N/A"
+            if status == "Unknown":
+                score = check_ip_reputation(c['remote_ip'])
+                if score is not None:
+                    score_display = f"{score}%"
+                    
+                    # Trigger Alert and Encrypted Log if score is high
+                    if score > 50:
+                        send_threat_alert(c['process_name'], c['remote_ip'], score)
+                        log_msg = f"CRITICAL: {c['process_name']} -> {c['remote_ip']} (Score: {score}%)"
+                        log_event_encrypted(log_msg)
+            
+            # Print the updated table row
+            print(f"{c['process_name']:<20} | {c['remote_ip']:<15} | {status:<12} | {score_display}")
+            
     except KeyboardInterrupt:
         print("\nMonitoring stopped by user.")
 
+        
 def main():
     parser = argparse.ArgumentParser(description="Sentinel-Socket: Network Threat Triage Tool")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
