@@ -1,3 +1,38 @@
+# Sentinel-Socket 🛡️
+
+**Network Connection Monitor & Threat Triage Engine**
+
+Sentinel-Socket is a professional-grade security utility designed to monitor active TCP/UDP connections, triage them against global threat intelligence, and maintain an encrypted forensic log of suspicious activity.
+
+## 🚀 Features
+- **Real-time Monitoring**: Continuous polling of established connections with PID mapping.
+- **Threat Intelligence**: Integrated with AbuseIPDB API for real-time risk scoring.
+- **Smart Caching**: SQLite-backed intelligence cache with a 7-day TTL to optimize API usage.
+- **Encrypted Forensics**: All suspicious logs are encrypted using 128-bit Fernet (AES).
+- **Desktop Alerts**: Native system notifications for high-risk detections (>50% score).
+- **Log Rotation**: Automatic archiving of forensic logs to manage disk space.
+
+## 🛠️ Architecture
+- **Language**: Python 3.12+
+- **Core Libraries**: `psutil`, `cryptography`, `sqlite3`, `requests`, `plyer`.
+- **Database**: SQLite (IP Reputation & Intelligence Cache).
+
+## 🔧 Setup
+1. **Clone the repo** and initialize a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Or venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+    
+2. **Configure API Key** : Create a .env file in the root and add your AbuseIPDB key:
+
+'''bash
+ABUSEIPDB_API_KEY=your_key_here'''
+
+3. **Initialize**: '''bash python main.py init'''
+
+
+
 # Sentinel-Socket
 
 ## Current Architecture
