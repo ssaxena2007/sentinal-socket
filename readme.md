@@ -51,8 +51,14 @@ Sentinel-Socket is a professional-grade security utility designed to monitor act
     python main.py allow <IP_ADDRESS> --desc "Work Server"
     ```
     
+## Licensing: This project is licensed under a custom Non-Commercial License. See LICENSE file for details.
 
 
+
+
+##
+##
+##
 # OLD system
 
 # Sentinel-Socket
