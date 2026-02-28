@@ -23,13 +23,17 @@ Sentinel-Socket is a professional-grade security utility designed to monitor act
    python -m venv venv
    source venv/bin/activate  # Or venv\Scripts\activate on Windows
    pip install -r requirements.txt
-    
+    ```
 2. **Configure API Key** : Create a .env file in the root and add your AbuseIPDB key:
 
-'''bash
-ABUSEIPDB_API_KEY=your_key_here'''
+```bash
+ABUSEIPDB_API_KEY=your_key_here
+```
 
-3. **Initialize**: '''bash python main.py init'''
+3. **Initialize**: 
+```bash 
+python main.py init
+```
 
 
 
