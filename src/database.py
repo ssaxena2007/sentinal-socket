@@ -14,6 +14,13 @@ def init_db():
                 description TEXT
             )
         ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ip_cache (
+                ip_address TEXT PRIMARY KEY,
+                score INTEGER,
+                last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
         
         # Table for Connection Logs (Raw history for forensics)
         cursor.execute('''
